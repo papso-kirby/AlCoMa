@@ -121,7 +121,7 @@ namespace AlCoMa
         private void missingCardstechToolStripMenuItem_Click(object sender, EventArgs e) => ExportMachine("[inMyCollection] < 3", "Missing", x => 3 - x);
 
         private void surplusCardstechToolStripMenuItem_Click(object sender, EventArgs e) => ExportMachine("[inMyCollection] > 3", "Missing", x => x - 3);
-        
+
         private void ExportHuman(string filter, string filename, Func<int, int> mod) =>
             Export(filter, filename, (mergeKS, row) => mergeKS
                 ? $"[{row["Faction"]}] {mod.Invoke(int.Parse(row["InMyCollection"].ToString()!))}x {row["Name"]}"
@@ -149,5 +149,16 @@ namespace AlCoMa
             }
             Process.Start(new ProcessStartInfo(downloadPath) { UseShellExecute = true });
         }
+
+        private void allToolStripMenuItem_Click(object sender, EventArgs e) =>
+            Export("", "All", (mergeKS, row) => mergeKS
+                ? $"{int.Parse(row["InMyCollection"].ToString()!)} {row["ID"].ToString()!.Replace("CORE_", "COREKS_")}"
+                : $"{int.Parse(row["InMyCollection"].ToString()!)} {row["ID"]}");
+
+        private void allhumanToolStripMenuItem_Click(object sender, EventArgs e) =>
+            Export("", "All", (mergeKS, row) => mergeKS
+                ? $"[{row["Faction"]}] {int.Parse(row["InMyCollection"].ToString()!)}x {row["Name"]}"
+                : $"[{row["Faction"]}] {int.Parse(row["InMyCollection"].ToString()!)}x {row["Name"]} ({row["Set"]})");
+
     }
 }

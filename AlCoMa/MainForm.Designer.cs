@@ -41,6 +41,8 @@
             missingCardsToolStripMenuItem = new ToolStripMenuItem();
             missingCardstechToolStripMenuItem = new ToolStripMenuItem();
             surplusCardsToolStripMenuItem = new ToolStripMenuItem();
+            surplusCardstechToolStripMenuItem = new ToolStripMenuItem();
+            allToolStripMenuItem = new ToolStripMenuItem();
             CollectionDataGrid = new DataGridView();
             FactionSymbol = new DataGridViewImageColumn();
             dataGridViewTextBoxColumn1 = new DataGridViewTextBoxColumn();
@@ -94,7 +96,7 @@
             statusStrip1 = new StatusStrip();
             StatusLabel = new ToolStripStatusLabel();
             toolStripProgressBar1 = new ToolStripProgressBar();
-            surplusCardstechToolStripMenuItem = new ToolStripMenuItem();
+            allhumanToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)CollectionDataGrid).BeginInit();
             ((System.ComponentModel.ISupportInitialize)CollectionDataSet).BeginInit();
@@ -147,7 +149,7 @@
             // 
             // exportToolStripMenuItem
             // 
-            exportToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { missingCardsToolStripMenuItem, missingCardstechToolStripMenuItem, surplusCardsToolStripMenuItem, surplusCardstechToolStripMenuItem });
+            exportToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { missingCardsToolStripMenuItem, missingCardstechToolStripMenuItem, surplusCardsToolStripMenuItem, surplusCardstechToolStripMenuItem, allhumanToolStripMenuItem, allToolStripMenuItem });
             exportToolStripMenuItem.Name = "exportToolStripMenuItem";
             exportToolStripMenuItem.Size = new Size(270, 34);
             exportToolStripMenuItem.Text = "Export";
@@ -172,6 +174,20 @@
             surplusCardsToolStripMenuItem.Size = new Size(295, 34);
             surplusCardsToolStripMenuItem.Text = "Surplus Cards (human)";
             surplusCardsToolStripMenuItem.Click += surplusCardsToolStripMenuItem_Click;
+            // 
+            // surplusCardstechToolStripMenuItem
+            // 
+            surplusCardstechToolStripMenuItem.Name = "surplusCardstechToolStripMenuItem";
+            surplusCardstechToolStripMenuItem.Size = new Size(295, 34);
+            surplusCardstechToolStripMenuItem.Text = "Surplus Cards (tech)";
+            surplusCardstechToolStripMenuItem.Click += surplusCardstechToolStripMenuItem_Click;
+            // 
+            // allToolStripMenuItem
+            // 
+            allToolStripMenuItem.Name = "allToolStripMenuItem";
+            allToolStripMenuItem.Size = new Size(295, 34);
+            allToolStripMenuItem.Text = "All (tech)";
+            allToolStripMenuItem.Click += allToolStripMenuItem_Click;
             // 
             // CollectionDataGrid
             // 
@@ -734,12 +750,12 @@
             toolStripProgressBar1.Name = "toolStripProgressBar1";
             toolStripProgressBar1.Size = new Size(100, 24);
             // 
-            // surplusCardstechToolStripMenuItem
+            // allhumanToolStripMenuItem
             // 
-            surplusCardstechToolStripMenuItem.Name = "surplusCardstechToolStripMenuItem";
-            surplusCardstechToolStripMenuItem.Size = new Size(295, 34);
-            surplusCardstechToolStripMenuItem.Text = "Surplus Cards (tech)";
-            surplusCardstechToolStripMenuItem.Click += surplusCardstechToolStripMenuItem_Click;
+            allhumanToolStripMenuItem.Name = "allhumanToolStripMenuItem";
+            allhumanToolStripMenuItem.Size = new Size(295, 34);
+            allhumanToolStripMenuItem.Text = "All (human)";
+            allhumanToolStripMenuItem.Click += allhumanToolStripMenuItem_Click;
             // 
             // MainForm
             // 
@@ -853,5 +869,7 @@
         private ToolStripMenuItem toolStripMenuItem1;
         private ToolStripMenuItem missingCardstechToolStripMenuItem;
         private ToolStripMenuItem surplusCardstechToolStripMenuItem;
+        private ToolStripMenuItem allToolStripMenuItem;
+        private ToolStripMenuItem allhumanToolStripMenuItem;
     }
 }
