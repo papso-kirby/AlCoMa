@@ -6,6 +6,8 @@ A simple tool to get an overview over your digital Altered TCG collection.
 
 You can also export some data, like cards you're missing or you have a surplus of.
 
+![](https://github.com/papso-kirby/AlCoMa/blob/master/AlCoMa/Screenshot.png)
+
 ## Should I use this?
 
 No
