@@ -22,7 +22,7 @@ namespace AlCoMa
                 {
                     var filename = Path.GetFileName(imagePath);
                     var finalFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AlCoMa", "Images", filename);
-                    Directory.CreateDirectory(Path.GetDirectoryName(finalFileName));
+                    Directory.CreateDirectory(Path.GetDirectoryName(finalFileName)!);
                     if (!File.Exists(finalFileName))
                     {
                         using (HttpClient client = new HttpClient())

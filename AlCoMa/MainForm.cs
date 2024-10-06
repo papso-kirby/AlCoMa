@@ -68,7 +68,7 @@ namespace AlCoMa
             DataGridView dgv = (DataGridView)sender;
             if (dgv.Columns[e.ColumnIndex].Name == "FactionSymbol" && dgv.Rows[e.RowIndex].Cells.Count > 1)
             {
-                string imagePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "symbols", dgv.Rows[e.RowIndex].Cells["Faction"].Value as string + ".png");
+                string? imagePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath)!, "symbols", (dgv.Rows[e.RowIndex].Cells["Faction"].Value as string) + ".png");
                 e.Value = !string.IsNullOrEmpty(imagePath) && System.IO.File.Exists(imagePath)
                     ? await ImageCache.GetImage(imagePath, new Size(32, 32))
                     : (object?)null;
@@ -80,7 +80,7 @@ namespace AlCoMa
             toolTip1?.Dispose();
             if (e.RowIndex >= 0 && e.ColumnIndex == 0)
             {
-                string imagePath = CollectionDataGrid.Rows[e.RowIndex].Cells["ImagePath"].Value as string;
+                string? imagePath = CollectionDataGrid.Rows[e.RowIndex].Cells["ImagePath"].Value as string;
                 if (imagePath == null)
                 {
                     return;
@@ -114,40 +114,36 @@ namespace AlCoMa
             }
         }
 
-        private void missingCardsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void missingCardsToolStripMenuItem_Click(object sender, EventArgs e) => ExportHuman("[inMyCollection] < 3", "Missing", x => 3 - x);
+
+        private void surplusCardsToolStripMenuItem_Click(object sender, EventArgs e) => ExportHuman("[inMyCollection] > 3", "Surplus", x => x - 3);
+
+        private void missingCardstechToolStripMenuItem_Click(object sender, EventArgs e) => ExportMachine("[inMyCollection] < 3", "Missing", x => 3 - x);
+
+        private void surplusCardstechToolStripMenuItem_Click(object sender, EventArgs e) => ExportMachine("[inMyCollection] > 3", "Missing", x => x - 3);
+        
+        private void ExportHuman(string filter, string filename, Func<int, int> mod) =>
+            Export(filter, filename, (mergeKS, row) => mergeKS
+                ? $"[{row["Faction"]}] {mod.Invoke(int.Parse(row["InMyCollection"].ToString()!))}x {row["Name"]}"
+                : $"[{row["Faction"]}] {mod.Invoke(int.Parse(row["InMyCollection"].ToString()!))}x {row["Name"]} ({row["Set"]})");
+
+        private void ExportMachine(string filter, string filename, Func<int, int> mod) =>
+            Export(filter, filename, (mergeKS, row) => mergeKS
+                ? $"{mod.Invoke(int.Parse(row["InMyCollection"].ToString()!))} {row["ID"].ToString()!.Replace("CORE_", "COREKS_")}"
+                : $"{mod.Invoke(int.Parse(row["InMyCollection"].ToString()!))} {row["ID"]}");
+
+        private void Export(string filter, string filename, Func<bool, DataRowView, string> lineWriter)
         {
             var dt = storage.Data.ToTable();
-            dt.DefaultView.RowFilter = "[inMyCollection] < 3";
+            dt.DefaultView.RowFilter = filter;
             dt.DefaultView.Sort = "faction ASC";
-            string downloadPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\\Downloads\\Missing_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.txt";
+            string downloadPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\\Downloads\\{filename}_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.txt";
 
             using (StreamWriter sw = new StreamWriter(downloadPath))
             {
                 foreach (DataRowView row in dt.DefaultView)
                 {
-                    string line = storage.MergeKS
-                        ? $"[{row["Faction"]}] {3 - int.Parse(row["InMyCollection"].ToString())}x {row["Name"]}"
-                        : $"[{row["Faction"]}] {3 - int.Parse(row["InMyCollection"].ToString())}x {row["Name"]} ({row["Set"]})";
-                    sw.WriteLine(line);
-                }
-            }
-            Process.Start(new ProcessStartInfo(downloadPath) { UseShellExecute = true });
-        }
-
-        private void surplusCardsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var dt = storage.Data.ToTable();
-            dt.DefaultView.RowFilter = "[inMyCollection] > 3";
-            dt.DefaultView.Sort = "faction ASC";
-            string downloadPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\\Downloads\\Surplus_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.txt";
-
-            using (StreamWriter sw = new StreamWriter(downloadPath))
-            {
-                foreach (DataRowView row in dt.DefaultView)
-                {
-                    string line = storage.MergeKS
-                        ? $"[{row["Faction"]}] {-3 + int.Parse(row["InMyCollection"].ToString())}x {row["Name"]}"
-                        : $"[{row["Faction"]}] {-3 + int.Parse(row["InMyCollection"].ToString())}x {row["Name"]} ({row["Set"]})";
+                    string line = lineWriter.Invoke(storage.MergeKS, row);
                     sw.WriteLine(line);
                 }
             }

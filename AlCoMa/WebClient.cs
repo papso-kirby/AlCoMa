@@ -5,7 +5,7 @@ namespace AlCoMa
 {
     public static class WebClient
     {
-        static string url = "https://api.altered.gg/cards/stats?collection=true&itemsPerPage=%ITEMS%&page=%PAGE%&locale=en-us";
+        const string STATS_URL = "https://api.altered.gg/cards/stats?collection=true&itemsPerPage=%ITEMS%&page=%PAGE%&locale=en-us";
 
         private async static Task<Result<HttpResponseMessage>> Get(string token, int page = 1, int itemsPerPage = 36)
         {
@@ -13,7 +13,7 @@ namespace AlCoMa
             {
                 using HttpClient client = new();
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.Trim());
-                var response = await client.GetAsync(url.Replace("%PAGE%", page.ToString()).Replace("%ITEMS%", itemsPerPage.ToString()));
+                var response = await client.GetAsync(STATS_URL.Replace("%PAGE%", page.ToString()).Replace("%ITEMS%", itemsPerPage.ToString()));
                 return Result.Success(response);
             }
             catch (Exception ex)
@@ -30,14 +30,13 @@ namespace AlCoMa
             int i = 1;
             List<HydraMember> collection = new();
             List<HydraMember> currentData = new();
-            string error = null;
+            string? error = null;
             do
             {
                 var response = await Get(token, i);
                 await response.Ensure(r => r.IsSuccessStatusCode, r => r.StatusCode.ToString())
                     .Tap(async r =>
                     {
-                        // Read the JSON response
                         var jsonResponse = await r.Content.ReadAsStringAsync();
                         Logger.Log($"Response JSON: {jsonResponse[..20]}...");
                         currentData = Stats.FromJson(jsonResponse).HydraMember.ToList();

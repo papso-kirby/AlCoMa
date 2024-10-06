@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
@@ -37,6 +39,7 @@
             importToolStripMenuItem = new ToolStripMenuItem();
             exportToolStripMenuItem = new ToolStripMenuItem();
             missingCardsToolStripMenuItem = new ToolStripMenuItem();
+            missingCardstechToolStripMenuItem = new ToolStripMenuItem();
             surplusCardsToolStripMenuItem = new ToolStripMenuItem();
             CollectionDataGrid = new DataGridView();
             FactionSymbol = new DataGridViewImageColumn();
@@ -91,6 +94,7 @@
             statusStrip1 = new StatusStrip();
             StatusLabel = new ToolStripStatusLabel();
             toolStripProgressBar1 = new ToolStripProgressBar();
+            surplusCardstechToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)CollectionDataGrid).BeginInit();
             ((System.ComponentModel.ISupportInitialize)CollectionDataSet).BeginInit();
@@ -137,29 +141,36 @@
             // importToolStripMenuItem
             // 
             importToolStripMenuItem.Name = "importToolStripMenuItem";
-            importToolStripMenuItem.Size = new Size(169, 34);
+            importToolStripMenuItem.Size = new Size(270, 34);
             importToolStripMenuItem.Text = "Import";
             importToolStripMenuItem.Click += importToolStripMenuItem_Click;
             // 
             // exportToolStripMenuItem
             // 
-            exportToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { missingCardsToolStripMenuItem, surplusCardsToolStripMenuItem });
+            exportToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { missingCardsToolStripMenuItem, missingCardstechToolStripMenuItem, surplusCardsToolStripMenuItem, surplusCardstechToolStripMenuItem });
             exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            exportToolStripMenuItem.Size = new Size(169, 34);
+            exportToolStripMenuItem.Size = new Size(270, 34);
             exportToolStripMenuItem.Text = "Export";
             // 
             // missingCardsToolStripMenuItem
             // 
             missingCardsToolStripMenuItem.Name = "missingCardsToolStripMenuItem";
-            missingCardsToolStripMenuItem.Size = new Size(225, 34);
-            missingCardsToolStripMenuItem.Text = "Missing Cards";
+            missingCardsToolStripMenuItem.Size = new Size(295, 34);
+            missingCardsToolStripMenuItem.Text = "Missing Cards (human)";
             missingCardsToolStripMenuItem.Click += missingCardsToolStripMenuItem_Click;
+            // 
+            // missingCardstechToolStripMenuItem
+            // 
+            missingCardstechToolStripMenuItem.Name = "missingCardstechToolStripMenuItem";
+            missingCardstechToolStripMenuItem.Size = new Size(295, 34);
+            missingCardstechToolStripMenuItem.Text = "Missing Cards (tech)";
+            missingCardstechToolStripMenuItem.Click += missingCardstechToolStripMenuItem_Click;
             // 
             // surplusCardsToolStripMenuItem
             // 
             surplusCardsToolStripMenuItem.Name = "surplusCardsToolStripMenuItem";
-            surplusCardsToolStripMenuItem.Size = new Size(225, 34);
-            surplusCardsToolStripMenuItem.Text = "Surplus Cards";
+            surplusCardsToolStripMenuItem.Size = new Size(295, 34);
+            surplusCardsToolStripMenuItem.Text = "Surplus Cards (human)";
             surplusCardsToolStripMenuItem.Click += surplusCardsToolStripMenuItem_Click;
             // 
             // CollectionDataGrid
@@ -169,10 +180,26 @@
             CollectionDataGrid.AllowUserToOrderColumns = true;
             CollectionDataGrid.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             CollectionDataGrid.AutoGenerateColumns = false;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = SystemColors.Control;
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
+            CollectionDataGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             CollectionDataGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             CollectionDataGrid.Columns.AddRange(new DataGridViewColumn[] { FactionSymbol, dataGridViewTextBoxColumn1, inMyCollectionDataGridViewTextBoxColumn, dataGridViewTextBoxColumn2, Set, Faction, dataGridViewTextBoxColumn4, dataGridViewTextBoxColumn5, dataGridViewTextBoxColumn6, dataGridViewTextBoxColumn7, dataGridViewTextBoxColumn8, dataGridViewTextBoxColumn9, dataGridViewTextBoxColumn10, dataGridViewTextBoxColumn11, dataGridViewTextBoxColumn12, ImagePath, iDDataGridViewTextBoxColumn });
             CollectionDataGrid.DataMember = "Masterdata";
             CollectionDataGrid.DataSource = CollectionDataSet;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = SystemColors.Window;
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle2.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
+            CollectionDataGrid.DefaultCellStyle = dataGridViewCellStyle2;
             CollectionDataGrid.Location = new Point(5, 131);
             CollectionDataGrid.Name = "CollectionDataGrid";
             CollectionDataGrid.ReadOnly = true;
@@ -707,6 +734,13 @@
             toolStripProgressBar1.Name = "toolStripProgressBar1";
             toolStripProgressBar1.Size = new Size(100, 24);
             // 
+            // surplusCardstechToolStripMenuItem
+            // 
+            surplusCardstechToolStripMenuItem.Name = "surplusCardstechToolStripMenuItem";
+            surplusCardstechToolStripMenuItem.Size = new Size(295, 34);
+            surplusCardstechToolStripMenuItem.Text = "Surplus Cards (tech)";
+            surplusCardstechToolStripMenuItem.Click += surplusCardstechToolStripMenuItem_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(144F, 144F);
@@ -816,5 +850,8 @@
         private Label label3;
         private CheckBox KSCheckBox;
         private CheckBox BTGCheckBox;
+        private ToolStripMenuItem toolStripMenuItem1;
+        private ToolStripMenuItem missingCardstechToolStripMenuItem;
+        private ToolStripMenuItem surplusCardstechToolStripMenuItem;
     }
 }

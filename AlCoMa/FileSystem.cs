@@ -14,7 +14,7 @@ namespace AlCoMa
         {
             try
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(file.Filename));
+                Directory.CreateDirectory(Path.GetDirectoryName(file.Filename)!);
                 File.Delete(file.Filename);
                 File.WriteAllText(file.Filename, data);
                 return Result.Success(0);
@@ -73,7 +73,7 @@ namespace AlCoMa
 
         public string Filename { get; private set; }
 
-        public Masterdata(string filename) => this.Filename = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "data", "results", filename);
+        public Masterdata(string filename) => this.Filename = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath)!, "data", "results", filename);
 
         public Result<int> Save(string data) => FileSystem.Save(data, this);
 

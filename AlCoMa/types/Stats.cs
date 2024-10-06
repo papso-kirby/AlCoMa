@@ -1,4 +1,6 @@
-﻿namespace AlCoMa.Types
+﻿#nullable disable
+
+namespace AlCoMa.Types
 {
     using System;
     using System.Collections.Generic;
