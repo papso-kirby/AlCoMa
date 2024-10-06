@@ -19,3 +19,7 @@ In order to get your collection from the Altered API, the tool needs an Access T
 You should not give anyone your Access Token, especially random applications you download from the internet.
 
 So use this tool at your own risk! 
+
+## I want to donate something!
+
+That's nice. Just send me some cards: Kirby_0905
