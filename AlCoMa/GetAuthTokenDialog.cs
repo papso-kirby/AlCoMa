@@ -2,9 +2,9 @@
 
 namespace AlCoMa
 {
-    public partial class ImportForm : Form
+    public partial class GetAccessTokenDialog : Form
     {
-        public ImportForm() => InitializeComponent();
+        public GetAccessTokenDialog() => InitializeComponent();
         private bool asyncCloseHack = true;
 
         private void TokenTextBox_TextChanged(object sender, EventArgs e) =>
@@ -31,11 +31,12 @@ namespace AlCoMa
                         MessageBox.Show("The token is invalid");
                     }
                 }
-                else 
+                else
                 {
                     e.Cancel = false;
                 }
-                if (!asyncCloseHack) {
+                if (!asyncCloseHack)
+                {
                     Close();
                 }
             }

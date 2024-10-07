@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace AlCoMa.types
 {
+    public record Friend(String Name, String ID);
+
     public record CardMasterdata(
         string collectorNumber,
         string name_en,

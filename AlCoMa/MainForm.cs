@@ -4,6 +4,7 @@ using CSharpFunctionalExtensions;
 using CsvHelper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.CodeDom.Compiler;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
@@ -25,14 +26,14 @@ namespace AlCoMa
         {
             try
             {
-                using ImportForm importForm = new();
-                var result = importForm.ShowDialog();
+                using GetAccessTokenDialog dialog = new();
+                var result = dialog.ShowDialog();
                 if (result == DialogResult.OK)
                 {
                     toolStripProgressBar1.Style = ProgressBarStyle.Marquee;
                     try
                     {
-                        var collection = await WebClient.GetCollection(importForm.Token);
+                        var collection = await WebClient.GetCollection(dialog.Token);
                         collection
                             .Bind(c => UserFiles.Collection.Save(JsonConvert.SerializeObject(c)))
                             .Tap(() => Logger.Log("Collection saved"))
@@ -55,7 +56,10 @@ namespace AlCoMa
         private void MainForm_Load(object sender, EventArgs e)
         {
             Logger.OnMessage += (s, message) => LogTextBox.Text += (message + "\r\n");
+            CollectionDataGrid.DataMember = null;
             CollectionDataGrid.DataSource = storage.Data;
+            GiveListGridView.DataMember = null;
+            GiveListGridView.DataSource = storage.Givelist;
             storageManagerBindingSource.DataSource = storage;
             storage.PropertyChanged += (object? sender, PropertyChangedEventArgs e)
                 => StatusLabel.Text = $"Cards shown: {storage.CardsShown} - Cards total {storage.TotalCardsInCollection}";
@@ -66,9 +70,13 @@ namespace AlCoMa
         private async void CollectionDataGrid_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             DataGridView dgv = (DataGridView)sender;
-            if (dgv.Columns[e.ColumnIndex].Name == "FactionSymbol" && dgv.Rows[e.RowIndex].Cells.Count > 1)
+            if (dgv.Columns[e.ColumnIndex].Name.StartsWith("FactionSymbol") && dgv.Rows[e.RowIndex].Cells.Count > 1)
             {
-                string? imagePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath)!, "symbols", (dgv.Rows[e.RowIndex].Cells["Faction"].Value as string) + ".png");
+                string? columnValue = (dgv.Columns.Contains("Faction")
+                    ? dgv.Rows[e.RowIndex].Cells["Faction"]
+                    : dgv.Rows[e.RowIndex].Cells["Faction1"])?.Value as string;
+
+                string? imagePath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath)!, "symbols", columnValue + ".png");
                 e.Value = !string.IsNullOrEmpty(imagePath) && System.IO.File.Exists(imagePath)
                     ? await ImageCache.GetImage(imagePath, new Size(32, 32))
                     : (object?)null;
@@ -160,5 +168,80 @@ namespace AlCoMa
                 ? $"[{row["Faction"]}] {int.Parse(row["InMyCollection"].ToString()!)}x {row["Name"]}"
                 : $"[{row["Faction"]}] {int.Parse(row["InMyCollection"].ToString()!)}x {row["Name"]} ({row["Set"]})");
 
+        private void CollectionDataGrid_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                var hit = CollectionDataGrid.HitTest(e.X, e.Y);
+
+                if (hit.RowIndex >= 0)
+                {
+                    CollectionDataGrid.ClearSelection();
+                    CollectionDataGrid.Rows[hit.RowIndex].Selected = true;
+                    CardContextMenuStrip.Show(CollectionDataGrid, e.Location);
+                }
+            }
+        }
+
+        private void CardContextMenuStrip_Click(object sender, EventArgs e)
+        {
+            DataRow row = ((DataRowView)CollectionDataGrid.SelectedRows[0].DataBoundItem).Row;
+            storage.AddCardToGiveList(row);
+            MessageBox.Show(row["ID"].ToString() + " added");
+        }
+
+        private void ClearGiftListButton_Click(object sender, EventArgs e) => storage.ClearGivelist();
+
+        private async void GiveButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using GetAccessTokenDialog dialog = new();
+                var result = dialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    toolStripProgressBar1.Style = ProgressBarStyle.Marquee;
+                    try
+                    {
+                        var friends = await WebClient.GetFriends(dialog.Token);
+                        var tmp = friends
+                            .Tap(() => Logger.Log("Friends loaded"))
+                            .Map(f =>
+                            {
+                                using GiveDialog giveDialog = new();
+                                giveDialog.SetFriends(f.OrderBy(x => x.Name).ToList());
+                                giveDialog.SetCards(String.Join("\r\n",
+                                    storage.Givelist.Table!.AsEnumerable().Select(row => $"{row["ID"]} ({row["Faction"]} - {row["Name"]})")));
+                                if (giveDialog.ShowDialog() == DialogResult.OK)
+                                {
+                                    return giveDialog.SelectedFriend;
+                                }
+                                return null;
+                            })
+                            .Ensure(friend => friend != null, "Aborted")
+                            .TapError(() => Logger.Log("Could not give cards")); ;
+
+                        if (tmp.IsSuccess)
+                        {
+                            var giveResult = await WebClient.GiveCards(dialog.Token, tmp.Value, storage.Givelist.Table!.AsEnumerable().Select(row => row["ID"].ToString()).ToList());
+                            giveResult.Tap(() =>
+                            {
+                                MessageBox.Show("Cards gifted");
+                                storage.ClearGivelist();
+                            })
+                            .TapError(() => Logger.Log("Could not give cards"));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log(ex.ToString());
+                    }
+                }
+            }
+            finally
+            {
+                toolStripProgressBar1.Style = ProgressBarStyle.Blocks;
+            }
+        }
     }
 }

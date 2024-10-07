@@ -37,6 +37,7 @@ namespace AlCoMa
         private bool includeHero = true;
         private bool includeKS = true;
         private bool includeBTG = true;
+        private bool surplus;
 
         public bool MergeKS { get => mergeKS; set { SetField(ref mergeKS, value); FilterData(); } }
         public bool IncludeRare { get => includeRare; set { SetField(ref includeRare, value); FilterData(); } }
@@ -49,6 +50,7 @@ namespace AlCoMa
         public bool IncludeAxiom { get => includeAxiom; set { SetField(ref includeAxiom, value); FilterData(); } }
         public String? FilterText { get => filterText; set { SetField(ref filterText, value); FilterData(); } }
         public DataView Data { get => internalDataView; }
+        public DataView Givelist { get => internalData.Givelist.DefaultView; }
         public int TotalCardsInCollection { get => totalCardsInCollection; set { SetField(ref totalCardsInCollection, value); } }
         public int CardsShown { get => cardsShown; set { SetField(ref cardsShown, value); } }
         public bool IncludeCharacter { get => includeCharacter; set { SetField(ref includeCharacter, value); FilterData(); } }
@@ -58,6 +60,7 @@ namespace AlCoMa
         public bool IncludeHero { get => includeHero; set { SetField(ref includeHero, value); FilterData(); } }
         public bool IncludeKS { get => includeKS; set { SetField(ref includeKS, value); FilterData(); } }
         public bool IncludeBTG { get => includeBTG; set { SetField(ref includeBTG, value); FilterData(); } }
+        public bool Surplus { get => surplus; set { SetField(ref surplus, value); FilterData(); } }
 
         private void FilterData()
         {
@@ -120,8 +123,12 @@ namespace AlCoMa
             if (MergeKS) setFilter.Add("[Set] = 'KS/BTG'");
             var set = String.Join(" or ", setFilter);
 
-            var filters = new List<string?>() { rarity, faction, text, type, set };
-            
+            var surplus = Surplus
+                ? "[InMyCollection] > 3"
+                : null;
+
+            var filters = new List<string?>() { rarity, faction, text, type, set, surplus };
+
             internalDataView.Table = copy;
             internalDataView.RowFilter = String.Join(" and ", filters.Where(f => !String.IsNullOrWhiteSpace(f)).Select(f => $"({f})"));
 
@@ -201,5 +208,19 @@ namespace AlCoMa
                 Logger.Log(ex.ToString());
             }
         }
+
+        internal void AddCardToGiveList(DataRow row)
+        {
+            this.internalData.Givelist.AddGivelistRow(
+               row["Name"].ToString(),
+               row["Number"].ToString(),
+               row["Faction"].ToString(),
+               row["Rarity"].ToString(),
+               row["Type"].ToString(),
+               row["ID"].ToString()
+           );
+        }
+
+        internal void ClearGivelist() => internalData.Givelist.Clear();
     }
 }
